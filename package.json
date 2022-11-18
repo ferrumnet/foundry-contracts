@@ -1,4 +1,9 @@
 {
+  "name": "foundary-contracts",
+  "version": "0.1.0",
+  "description": "Commonly used smart contracts from Ferrum Founday",
+  "author": "Ferrum Network",
+  "license": "MIT",
   "dependencies": {
     "@openzeppelin/contracts": "^4.1.0",
     "@openzeppelin/contracts-upgradeable": "^4.3.2",
