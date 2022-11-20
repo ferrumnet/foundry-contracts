@@ -1,11 +1,11 @@
 import { ethers } from "hardhat";
 import { abi, deployUsingDeployer, getCtx, getTransactionLog, Salt, TestContext, Wei, ZeroAddress } from "../common/Utils";
-import { GenericUpgradableTokenMintable } from '../../typechain/GenericUpgradableTokenMintable';
+import { GenericUpgradableTokenMintable } from '../../typechain-types/GenericUpgradableTokenMintable';
 import { GenericUpgradableTokenMintable__factory } from
-	"../../typechain/factories/GenericUpgradableTokenMintable__factory";
-import { TransparentUpgradeableProxy__factory } from '../../typechain/factories/TransparentUpgradeableProxy__factory';
-import { DirectMinimalErc20__factory } from '../../typechain/factories/DirectMinimalErc20__factory';
-import { DirectMinimalErc20 } from '../../typechain/DirectMinimalErc20';
+	"../../typechain-types/factories/GenericUpgradableTokenMintable__factory";
+import { TransparentUpgradeableProxy__factory } from '../../typechain-types/factories/TransparentUpgradeableProxy__factory';
+import { DirectMinimalErc20__factory } from '../../typechain-types/factories/DirectMinimalErc20__factory';
+import { DirectMinimalErc20 } from '../../typechain-types/DirectMinimalErc20';
 
 const f = GenericUpgradableTokenMintable__factory;
 

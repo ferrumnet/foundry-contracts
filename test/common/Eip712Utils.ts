@@ -103,3 +103,35 @@ export function multiSigToBytes(sigs: string[]): string {
 	sig = sig + vs;
 	return '0x' + sig;
 }
+
+export async function getBridgeMethodCall(
+		contractName: string,
+		contractVersion: string,
+		chainId: number,
+		bridge: string,
+		methodName: string,
+		args: {type: string, name: string, value: string}[], sks: string[]) {
+	const web3 = new Web3();
+	// console.log('We are going to bridge method call it ', args)
+	const msg = produceSignature(
+		web3.eth, chainId, bridge, {
+			contractName: contractName,
+			contractVersion: contractVersion,
+			method: methodName,
+			args,
+		} as Eip712Params,
+	);
+	// console.log('About to producing msg ', msg)
+	const sigs = [];
+	for (const sk of sks) {
+		console.log(`    About to sign with private key ${sk}`);
+		const {sig, addr} = await signWithPrivateKey(sk, msg.hash!);
+		sigs.push({sig, addr});
+	}
+    // Make sure that signatures are in the order of the signer address
+    sigs.sort((s1, s2) => Buffer.from(s2.addr, 'hex') < Buffer.from(s1.addr, 'hex') ? 1 : -1);
+	const fullSig = multiSigToBytes(sigs.map(s => s.sig));
+	console.log('    Full signature is hash: ', msg.hash, 'sig:', fullSig);
+	msg.signature = fullSig;
+	return msg;
+}
