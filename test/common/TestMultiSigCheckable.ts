@@ -1,9 +1,8 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { deployWithOwner, expiryInFuture, getCtx, TestContext, throws } from "./Utils";
-import { TestMultiSigCheckable } from '../../typechain/TestMultiSigCheckable';
-import { randomSalt } from "./Eip712Utils";
-import { getBridgeMethodCall } from "../bridge/BridgeUtilsV12";
+import { TestMultiSigCheckable } from '../../typechain-types/TestMultiSigCheckable';
+import { randomSalt, getBridgeMethodCall } from "./Eip712Utils";
 
 interface MutliSigContext extends TestContext {
     multi: TestMultiSigCheckable;

@@ -54,7 +54,7 @@ contract GeneralTaxDistributorDiscrete is GeneralTaxDistributor {
                 amount = remaining;
             }
             if (amount != 0) {
-                distributeToTarget(
+                return distributeToTarget(
                         i,
                         ti.tokenSpecificConfig,
                         token,
@@ -63,5 +63,6 @@ contract GeneralTaxDistributorDiscrete is GeneralTaxDistributor {
                     );
             }
         }
+        return 0;
     }
 }
