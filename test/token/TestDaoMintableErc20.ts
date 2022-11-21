@@ -1,9 +1,8 @@
-import { ethers } from "hardhat";
-import { abi, deployUsingDeployer, deployWithOwner, getCtx, getTransactionLog, Salt, TestContext, throws, Wei, ZeroAddress } from "../common/Utils";
-import { DaoMintableErc20 } from '../../typechain/DaoMintableErc20';
-import { TokenDao } from '../../typechain/TokenDao';
+import { abi, deployWithOwner, getCtx, TestContext, throws, Wei, ZeroAddress } from "../common/Utils";
+import { DaoMintableErc20 } from '../../typechain-types/DaoMintableErc20';
+import { TokenDao } from '../../typechain-types/TokenDao';
 import { randomBytes } from "crypto";
-import { getBridgeMethodCall } from "../bridge/BridgeUtilsV12";
+import { getBridgeMethodCall } from "../common/Eip712Utils";
 import { expect } from "chai";
 
 const GOV_GROUP_ID = 88;
