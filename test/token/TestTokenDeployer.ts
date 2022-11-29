@@ -1,8 +1,8 @@
 import { ethers } from "hardhat";
 import { deployUsingDeployer, getCtx, getTransactionLog, Salt, Wei, ZeroAddress } from "../common/Utils";
-import { FerrumProxyTokenDeployer } from '../../typechain/FerrumProxyTokenDeployer';
-import { GenericUpgradableTokenMintable } from '../../typechain/GenericUpgradableTokenMintable';
-import { TransparentUpgradeableProxy } from '../../typechain/TransparentUpgradeableProxy';
+import { FerrumProxyTokenDeployer } from '../../typechain-types/FerrumProxyTokenDeployer';
+import { GenericUpgradableTokenMintable } from '../../typechain-types/GenericUpgradableTokenMintable';
+import { TransparentUpgradeableProxy } from '../../typechain-types/TransparentUpgradeableProxy';
 
 /*
 Scanario:
