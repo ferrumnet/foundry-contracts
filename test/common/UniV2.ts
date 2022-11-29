@@ -2,7 +2,7 @@ import { ChainId, Token, TokenAmount, Trade, TradeType, Route, Percent, Router, 
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json'
 import { abi as IUniswapV2Pair} from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { ethers } from 'hardhat';
-import { DummyToken } from '../../typechain/DummyToken';
+import { DummyToken } from '../../typechain-types/DummyToken';
 import { getTransactionReceipt, Wei } from './Utils';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { Contract } from 'ethers';
@@ -47,7 +47,7 @@ export class UniV2Helper {
         return getRouterContract(signer);
     }
 
-    registerToken(addr, symbol, name) {
+    registerToken(addr: any, symbol: any, name: any) {
         const token = new Token(
             ChainId.MAINNET,
             addr,

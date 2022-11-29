@@ -1,11 +1,11 @@
 {
-  "name": "foundary-contracts",
+  "name": "foundry-contracts",
   "version": "0.1.0",
   "description": "Commonly used smart contracts from Ferrum Founday",
   "author": "Ferrum Network",
   "license": "MIT",
   "scripts": {
-    "postinstall": "npx hardhat compile"
+    "postinstall": "npx hardhat compile && npx tsc"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.1.0",

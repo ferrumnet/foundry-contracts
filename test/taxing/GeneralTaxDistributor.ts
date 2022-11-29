@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { abi, deploy, deployDummyToken, deployWithOwner, getCtx, getGasLimit, throws, validateBalances, Wei, ZeroAddress } from "../common/Utils";
-import { GeneralTaxDistributor } from '../../typechain/GeneralTaxDistributor';
+import { GeneralTaxDistributor } from '../../typechain-types/GeneralTaxDistributor';
 import { BigNumberish } from "ethers";
 import { packWeights } from "./GeneralTaxDistrobutorUtils";
 

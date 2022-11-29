@@ -2,8 +2,8 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { randomBytes } from "crypto";
 import { ethers } from "hardhat";
-import { DummyToken } from "../../typechain/DummyToken";
-import { IVersioned } from "../../typechain/IVersioned";
+import { DummyToken } from "../../typechain-types/DummyToken";
+import { IVersioned } from "../../typechain-types/IVersioned";
 export const ZeroAddress = '0x' + '0'.repeat(40);
 export const Salt = '0x' + '12'.repeat(32);
 
