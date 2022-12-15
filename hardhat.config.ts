@@ -13,7 +13,12 @@ const config: HardhatUserConfig = {
       }
     } }],
   },
-
+  networks: {
+    local: {
+      chainId: 31337,
+      url: 'http://localhost:8545',
+    }
+  }
 };
 
 export default config;
