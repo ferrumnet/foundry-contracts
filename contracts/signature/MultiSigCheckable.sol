@@ -377,6 +377,7 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
         require(result, "MSC: Invalid signature");
         require(!usedHashes[salt], "MSC: Message already used");
         usedHashes[salt] = true;
+        return signer;
     }
 
     function verifyUniqueSaltWithQuorumId(
@@ -517,7 +518,7 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
         bytes32 digest,
         uint64 expectedGroupId,
         bytes memory multiSignature
-    ) internal view returns (bool result, address memory signer) {
+    ) internal view returns (bool result, address signer) {
         (result, signer) = tryVerifyDigestWithAddressSingleSigner(
             digest,
             expectedGroupId,
@@ -531,20 +532,18 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
      @param expectedGroupId The expected group ID
      @param multiSignature The signatures formatted as a multisig. Note that this
         format requires signatures to be sorted in the order of signers (as bytes)
-     @return result Identifies success or failure
-     @return signers Lis of signers.
      */
     function tryVerifyDigestWithAddressSingleSigner(
         bytes32 digest,
         uint64 expectedGroupId,
         bytes memory multiSignature
-    ) internal view returns (bool result, address memory signer) {
+    ) internal view returns (bool result, address signer) {
         require(multiSignature.length != 0, "MSC: multiSignature required");
         MultiSigLib.Sig[] memory signatures = MultiSigLib.parseSig(
             multiSignature
         );
         require(signatures.length > 0, "MSC: no zero len signatures");
-        signers = new address[](signatures.length);
+        address[] memory signers = new address[](signatures.length);
 
         address _signer = ECDSA.recover(
             digest,
@@ -555,7 +554,7 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
         signers[0] = _signer;
         address quorumId = quorumSubscriptions[_signer].id;
         if (quorumId == address(0)) {
-            return (false, new address[](0));
+            return (false, address(0));
         }
         require(
             expectedGroupId == 0 || quorumSubscriptions[_signer].groupId == expectedGroupId,
@@ -571,7 +570,7 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
             );
             quorumId = quorumSubscriptions[_signer].id;
             if (quorumId == address(0)) {
-                return (false, new address[](0));
+                return (false, address(0));
             }
             require(
                 q.id == quorumId,
@@ -635,7 +634,7 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
         bytes32 message,
         uint64 expectedGroupId,
         bytes memory multiSignature
-    ) internal view returns (bytes32 digest, bool result, address memory signer) {
+    ) internal view returns (bytes32 digest, bool result, address signer) {
         digest = _hashTypedDataV4(message);
         (result, signer) = tryVerifyDigestSingleSigner(digest, expectedGroupId, multiSignature);
     }
