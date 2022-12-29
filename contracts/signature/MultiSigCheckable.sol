@@ -359,6 +359,26 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
         usedHashes[salt] = true;
     }
 
+    /**
+     @notice Checking salt's uniqueness because same message can be signed with different people.
+     @param message The message to verify
+     @param salt The salt to be unique
+     @param expectedGroupId The expected group ID
+     @param multiSignature The signatures formatted as a multisig
+     */
+    function verifyUniqueSaltSingleSigner(
+        bytes32 message,
+        bytes32 salt,
+        uint64 expectedGroupId,
+        bytes memory multiSignature
+    ) internal virtual {
+        require(multiSignature.length != 0, "MSC: multiSignature required");
+        (, bool result) = tryVerifySingleSigner(message, expectedGroupId, multiSignature);
+        require(result, "MSC: Invalid signature");
+        require(!usedHashes[salt], "MSC: Message already used");
+        usedHashes[salt] = true;
+    }
+
     function verifyUniqueSaltWithQuorumId(
         bytes32 message,
         address expectedQuorumId,
@@ -486,6 +506,90 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
         return (true, signers);
     }
 
+        /**
+     @notice Tries to verify a digest message
+     @param digest The digest
+     @param expectedGroupId The expected group ID
+     @param multiSignature The signatures formatted as a multisig
+     @return result Identifies success or failure
+     */
+    function tryVerifyDigestSingleSigner(
+        bytes32 digest,
+        uint64 expectedGroupId,
+        bytes memory multiSignature
+    ) internal view returns (bool result) {
+        (result, ) = tryVerifyDigestWithAddressSingleSigner(
+            digest,
+            expectedGroupId,
+            multiSignature
+        );
+    }
+
+     /**
+     @notice Returns if the digest can be verified
+     @param digest The digest
+     @param expectedGroupId The expected group ID
+     @param multiSignature The signatures formatted as a multisig. Note that this
+        format requires signatures to be sorted in the order of signers (as bytes)
+     @return result Identifies success or failure
+     @return signers Lis of signers.
+     */
+    function tryVerifyDigestWithAddressSingleSigner(
+        bytes32 digest,
+        uint64 expectedGroupId,
+        bytes memory multiSignature
+    ) internal view returns (bool result, address[] memory signers) {
+        require(multiSignature.length != 0, "MSC: multiSignature required");
+        MultiSigLib.Sig[] memory signatures = MultiSigLib.parseSig(
+            multiSignature
+        );
+        require(signatures.length > 0, "MSC: no zero len signatures");
+        signers = new address[](signatures.length);
+
+        address _signer = ECDSA.recover(
+            digest,
+            signatures[0].v,
+            signatures[0].r,
+            signatures[0].s
+        );
+        signers[0] = _signer;
+        address quorumId = quorumSubscriptions[_signer].id;
+        if (quorumId == address(0)) {
+            return (false, new address[](0));
+        }
+        require(
+            expectedGroupId == 0 || quorumSubscriptions[_signer].groupId == expectedGroupId,
+            "MSC: invalid groupId for signer"
+        );
+        Quorum memory q = quorums[quorumId];
+        for (uint256 i = 1; i < signatures.length; i++) {
+            _signer = ECDSA.recover(
+                digest,
+                signatures[i].v,
+                signatures[i].r,
+                signatures[i].s
+            );
+            quorumId = quorumSubscriptions[_signer].id;
+            if (quorumId == address(0)) {
+                return (false, new address[](0));
+            }
+            require(
+                q.id == quorumId,
+                "MSC: all signers must be of same quorum"
+            );
+
+            require(
+                expectedGroupId == 0 || q.groupId == expectedGroupId,
+                "MSC: invalid groupId for signer"
+            );
+            signers[i] = _signer;
+            // This ensures there are no duplicate signers
+            require(signers[i - 1] < _signer, "MSC: Sigs not sorted");
+        }
+
+        return (true, signers);
+    }
+
     /**
      @notice Tries to verify a message hash
         @dev example message;
@@ -503,6 +607,31 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
      @param multiSignature The signatures formatted as a multisig
     */
     function tryVerify(
+        bytes32 message,
+        uint64 expectedGroupId,
+        bytes memory multiSignature
+    ) internal view returns (bytes32 digest, bool result) {
+        digest = _hashTypedDataV4(message);
+        result = tryVerifyDigest(digest, expectedGroupId, multiSignature);
+    }
+
+    /**
+     @notice Tries to verify a message hash
+        @dev example message;
+
+        bytes32 constant METHOD_SIG =
+            keccak256("WithdrawSigned(address token,address payee,uint256 amount,bytes32 salt)");
+        bytes32 message = keccak256(abi.encode(
+          METHOD_SIG,
+          token,
+          payee,
+          amount,
+          salt
+     @param message The message
+     @param expectedGroupId The expected group ID
+     @param multiSignature The signatures formatted as a multisig
+    */
+    function tryVerifySingleSigner(
         bytes32 message,
         uint64 expectedGroupId,
         bytes memory multiSignature
