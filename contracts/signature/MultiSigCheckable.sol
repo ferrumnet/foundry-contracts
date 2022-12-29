@@ -371,9 +371,9 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
         bytes32 salt,
         uint64 expectedGroupId,
         bytes memory multiSignature
-    ) internal virtual {
+    ) internal virtual returns (address signer) {
         require(multiSignature.length != 0, "MSC: multiSignature required");
-        (, bool result) = tryVerifySingleSigner(message, expectedGroupId, multiSignature);
+        (, bool result, address signer) = tryVerifySingleSigner(message, expectedGroupId, multiSignature);
         require(result, "MSC: Invalid signature");
         require(!usedHashes[salt], "MSC: Message already used");
         usedHashes[salt] = true;
@@ -517,8 +517,8 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
         bytes32 digest,
         uint64 expectedGroupId,
         bytes memory multiSignature
-    ) internal view returns (bool result) {
-        (result, ) = tryVerifyDigestWithAddressSingleSigner(
+    ) internal view returns (bool result, address memory signer) {
+        (result, signer) = tryVerifyDigestWithAddressSingleSigner(
             digest,
             expectedGroupId,
             multiSignature
@@ -538,7 +538,7 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
         bytes32 digest,
         uint64 expectedGroupId,
         bytes memory multiSignature
-    ) internal view returns (bool result, address[] memory signers) {
+    ) internal view returns (bool result, address memory signer) {
         require(multiSignature.length != 0, "MSC: multiSignature required");
         MultiSigLib.Sig[] memory signatures = MultiSigLib.parseSig(
             multiSignature
@@ -587,7 +587,7 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
             require(signers[i - 1] < _signer, "MSC: Sigs not sorted");
         }
 
-        return (true, signers);
+        return (true, signers[0]);
     }
 
     /**
@@ -635,8 +635,8 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
         bytes32 message,
         uint64 expectedGroupId,
         bytes memory multiSignature
-    ) internal view returns (bytes32 digest, bool result) {
+    ) internal view returns (bytes32 digest, bool result, address memory signer) {
         digest = _hashTypedDataV4(message);
-        result = tryVerifyDigest(digest, expectedGroupId, multiSignature);
+        (result, signer) = tryVerifyDigestSingleSigner(digest, expectedGroupId, multiSignature);
     }
 }
