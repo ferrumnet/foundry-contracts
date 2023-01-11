@@ -375,8 +375,9 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
         require(multiSignature.length != 0, "MSC: multiSignature required");
         (, bool result, address signer) = tryVerifySingleSigner(message, expectedGroupId, multiSignature);
         require(result, "MSC: Invalid signature");
-        require(!usedHashes[salt], "MSC: Message already used");
-        usedHashes[salt] = true;
+        // this check is removed here since multiple finalizers will use the same salt for the same block
+        //require(!usedHashes[salt], "MSC: Message already used");
+        //usedHashes[salt] = true;
         return signer;
     }
 
