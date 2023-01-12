@@ -362,22 +362,17 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
     /**
      @notice Checking salt's uniqueness because same message can be signed with different people.
      @param message The message to verify
-     @param salt The salt to be unique
      @param expectedGroupId The expected group ID
      @param multiSignature The signatures formatted as a multisig
      */
-    function verifyUniqueSaltSingleSigner(
+    function validateSignature(
         bytes32 message,
-        bytes32 salt,
         uint64 expectedGroupId,
         bytes memory multiSignature
-    ) internal virtual returns (address signer) {
+    ) internal view returns (address signer) {
         require(multiSignature.length != 0, "MSC: multiSignature required");
         (, bool result, address signer) = tryVerifySingleSigner(message, expectedGroupId, multiSignature);
         require(result, "MSC: Invalid signature");
-        // this check is removed here since multiple finalizers will use the same salt for the same block
-        //require(!usedHashes[salt], "MSC: Message already used");
-        //usedHashes[salt] = true;
         return signer;
     }
 
@@ -508,33 +503,14 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
         return (true, signers);
     }
 
-        /**
-     @notice Tries to verify a digest message
-     @param digest The digest
-     @param expectedGroupId The expected group ID
-     @param multiSignature The signatures formatted as a multisig
-     @return result Identifies success or failure
-     */
-    function tryVerifyDigestSingleSigner(
-        bytes32 digest,
-        uint64 expectedGroupId,
-        bytes memory multiSignature
-    ) internal view returns (bool result, address signer) {
-        (result, signer) = tryVerifyDigestWithAddressSingleSigner(
-            digest,
-            expectedGroupId,
-            multiSignature
-        );
-    }
-
      /**
-     @notice Returns if the digest can be verified
+     @notice Same as tryVerifyDigestWithAddress but does not check fo minSignatures
      @param digest The digest
      @param expectedGroupId The expected group ID
      @param multiSignature The signatures formatted as a multisig. Note that this
         format requires signatures to be sorted in the order of signers (as bytes)
      */
-    function tryVerifyDigestWithAddressSingleSigner(
+    function tryVerifyDigestWithAddressNoMinSigCheck(
         bytes32 digest,
         uint64 expectedGroupId,
         bytes memory multiSignature
@@ -637,6 +613,10 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
         bytes memory multiSignature
     ) internal view returns (bytes32 digest, bool result, address signer) {
         digest = _hashTypedDataV4(message);
-        (result, signer) = tryVerifyDigestSingleSigner(digest, expectedGroupId, multiSignature);
+        (result, signer) = tryVerifyDigestWithAddressNoMinSigCheck(
+            digest,
+            expectedGroupId,
+            multiSignature
+        );
     }
 }
