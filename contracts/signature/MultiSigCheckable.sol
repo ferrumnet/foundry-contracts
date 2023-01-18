@@ -359,23 +359,6 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
         usedHashes[salt] = true;
     }
 
-    /**
-     @notice Validate signature of message
-     @param message The message to verify
-     @param expectedGroupId The expected group ID
-     @param multiSignature The signatures formatted as a multisig
-     */
-    function validateSignature(
-        bytes32 message,
-        uint64 expectedGroupId,
-        bytes memory multiSignature
-    ) internal view returns (address signer) {
-        require(multiSignature.length != 0, "MSC: multiSignature required");
-        (, bool result, address signer) = tryVerifySingleSigner(message, expectedGroupId, multiSignature);
-        require(result, "MSC: Invalid signature");
-        return signer;
-    }
-
     function verifyUniqueSaltWithQuorumId(
         bytes32 message,
         address expectedQuorumId,
@@ -385,7 +368,7 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
     ) internal virtual {
         require(multiSignature.length != 0, "MSC: multiSignature required");
         bytes32 digest = _hashTypedDataV4(message);
-        (bool result, address[] memory signers) = tryVerifyDigestWithAddress(digest, expectedGroupId, multiSignature, true);
+        (bool result, address[] memory signers) = tryVerifyDigestWithAddress(digest, expectedGroupId, multiSignature);
         require(result, "MSC: Invalid signature");
         require(!usedHashes[salt], "MSC: Message already used");
         require(
@@ -431,9 +414,25 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
         (result, ) = tryVerifyDigestWithAddress(
             digest,
             expectedGroupId,
-            multiSignature,
-            true
+            multiSignature
         );
+    }
+
+    /**
+     @notice Returns if the digest can be verified
+     @param digest The digest
+     @param expectedGroupId The expected group ID
+     @param multiSignature The signatures formatted as a multisig. Note that this
+        format requires signatures to be sorted in the order of signers (as bytes)
+     @return result Identifies success or failure
+     @return signers Lis of signers.
+     */
+    function tryVerifyDigestWithAddress(
+        bytes32 digest,
+        uint64 expectedGroupId,
+        bytes memory multiSignature
+    ) internal view returns (bool result, address[] memory signers) {
+        (result, signers) = tryVerifyDigestWithAddressWithMinSigCheck(digest, expectedGroupId, multiSignature, true);
     }
 
     /**
@@ -446,7 +445,7 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
      @return result Identifies success or failure
      @return signers Lis of signers.
      */
-    function tryVerifyDigestWithAddress(
+    function tryVerifyDigestWithAddressWithMinSigCheck(
         bytes32 digest,
         uint64 expectedGroupId,
         bytes memory multiSignature,
@@ -503,7 +502,6 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
         if (checkForMinSigs) {
             require(signatures.length >= q.minSignatures, "MSC: not enough signatures");
         }
-
         return (true, signers);
     }
 
@@ -530,35 +528,5 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
     ) internal view returns (bytes32 digest, bool result) {
         digest = _hashTypedDataV4(message);
         result = tryVerifyDigest(digest, expectedGroupId, multiSignature);
-    }
-
-    /**
-     @notice Tries to verify a message hash
-        @dev example message;
-
-        bytes32 constant METHOD_SIG =
-            keccak256("WithdrawSigned(address token,address payee,uint256 amount,bytes32 salt)");
-        bytes32 message = keccak256(abi.encode(
-          METHOD_SIG,
-          token,
-          payee,
-          amount,
-          salt
-     @param message The message
-     @param expectedGroupId The expected group ID
-     @param multiSignature The signatures formatted as a multisig
-    */
-    function tryVerifySingleSigner(
-        bytes32 message,
-        uint64 expectedGroupId,
-        bytes memory multiSignature
-    ) internal view returns (bytes32 digest, bool result, address signer) {
-        digest = _hashTypedDataV4(message);
-        (result, signer) = tryVerifyDigestWithAddress(
-            digest,
-            expectedGroupId,
-            multiSignature,
-            false
-        );
     }
 }
