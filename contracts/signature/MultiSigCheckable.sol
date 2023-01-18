@@ -432,6 +432,25 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
         uint64 expectedGroupId,
         bytes memory multiSignature
     ) internal view returns (bool result, address[] memory signers) {
+        (result, signers) = tryVerifyDigestWithAddressWithMinSigCheck(digest, expectedGroupId, multiSignature, true);
+    }
+
+    /**
+     @notice Returns if the digest can be verified
+     @param digest The digest
+     @param expectedGroupId The expected group ID
+     @param multiSignature The signatures formatted as a multisig. Note that this
+        format requires signatures to be sorted in the order of signers (as bytes)
+     @param checkForMinSigs If the minimum number of signatures check should be performed
+     @return result Identifies success or failure
+     @return signers Lis of signers.
+     */
+    function tryVerifyDigestWithAddressWithMinSigCheck(
+        bytes32 digest,
+        uint64 expectedGroupId,
+        bytes memory multiSignature,
+        bool checkForMinSigs
+    ) internal view returns (bool result, address[] memory signers) {
         require(multiSignature.length != 0, "MSC: multiSignature required");
         MultiSigLib.Sig[] memory signatures = MultiSigLib.parseSig(
             multiSignature
@@ -479,10 +498,10 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
             // This ensures there are no duplicate signers
             require(signers[i - 1] < _signer, "MSC: Sigs not sorted");
         }
-        require(
-            signatures.length >= q.minSignatures,
-            "MSC: not enough signatures"
-        );
+
+        if (checkForMinSigs) {
+            require(signatures.length >= q.minSignatures, "MSC: not enough signatures");
+        }
         return (true, signers);
     }
 
