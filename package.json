@@ -5,7 +5,7 @@
   "author": "Ferrum Network",
   "license": "MIT",
   "scripts": {
-    "postinstall": "npx hardhat compile && npx tsc"
+    "postinstall": "npx hardhat compile && npx tsc && cp -r ./typechain-types ./dist/"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.1.0",
