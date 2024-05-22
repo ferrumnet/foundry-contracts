@@ -6,7 +6,7 @@ import '@nomiclabs/hardhat-waffle'
 
 const config: HardhatUserConfig = {
   solidity: {
-    compilers: [{ version: "0.8.2", settings: {
+    compilers: [{ version: "0.8.25", settings: {
       optimizer: {
         enabled: true,
         runs: 200
