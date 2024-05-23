@@ -2,7 +2,7 @@
 pragma solidity 0.8.25;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract WithAdmin is Ownable {
+abstract contract WithAdmin is Ownable {
 	address public admin;
 	event AdminSet(address admin);
 

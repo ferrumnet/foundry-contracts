@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract DirectMinimalErc20 is ERC20Burnable, Ownable {
 	string public _name;
 	string public _symbol;
-	constructor() ERC20("", "") {
+	constructor() ERC20("", "")Ownable(msg.sender) {
 	}
 
 	function init(address to, string memory name_, string memory symbol_, uint256 supply)
