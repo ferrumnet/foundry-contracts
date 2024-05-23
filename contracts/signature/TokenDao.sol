@@ -17,7 +17,7 @@ contract TokenDao is MultiSigProofOfStake {
     event SlashStakeThresholdSet(uint256 stakeThresholdValue);
     event MintGovThresholdSet(uint256 govtThresholdValue);
 
-    constructor() EIP712(NAME, VERSION) {}
+    constructor() Ownable(msg.sender) EIP712(NAME, VERSION) {}
 
     /**
      @notice Allow owner to change the token owner in case something goes wrong.

@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 /**
  * To freeze functionality. This is one way. Once you freeze there is no way back.
  */
-contract Freezable is Ownable {
+abstract contract Freezable is Ownable {
     bool isFrozen;
 
     /**

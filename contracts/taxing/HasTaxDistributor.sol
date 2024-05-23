@@ -7,7 +7,7 @@ import "./IHasTaxDistributor.sol";
 /**
  @notice A contract that uses tax distributer
  */
-contract HasTaxDistributor is Ownable, IHasTaxDistributor {
+abstract contract HasTaxDistributor is Ownable, IHasTaxDistributor {
 	address public override taxDistributor;
 
     /**

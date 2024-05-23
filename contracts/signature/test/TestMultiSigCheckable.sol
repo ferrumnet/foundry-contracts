@@ -14,6 +14,6 @@ import "../MultiSigCheckable.sol";
 	  - All actions can only be submitted to chain by admin or owner
  */
 contract TestMultiSigCheckable is MultiSigCheckable {
-	constructor () EIP712("TEST_MULTI_SIG_CHECKABLE", "1.0.0") {
+	constructor () EIP712("TEST_MULTI_SIG_CHECKABLE", "1.0.0") Ownable(msg.sender) {
 	}
 }
