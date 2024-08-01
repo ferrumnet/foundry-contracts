@@ -81,6 +81,11 @@ contract GeneralTaxDistributorUpgradable is Initializable, UUPSUpgradeable, With
         return $.targetInfos[idx];
     }
 
+    function lowThresholdX1000() external view returns (uint256) {
+        GeneralTaxDistributorStorageV001 storage $ = _getGeneralTaxDistributorStorageV001();
+        return $.lowThresholdX1000;
+    }
+
     function turnRandomization(uint8 off) external onlyAdmin {
         require(off == 1 || off == 0, "GTD: invalid off");
         GeneralTaxDistributorStorageV001 storage $ = _getGeneralTaxDistributorStorageV001();
