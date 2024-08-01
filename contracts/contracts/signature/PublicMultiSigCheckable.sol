@@ -19,14 +19,14 @@ abstract contract PublicMultiSigCheckable is MultiSigCheckable {
     @param ownerGroupId The owner group ID. Can modify this quorum (if managed)
     @param addresses List of addresses in the quorum
     */
-    function initialize(
+    function initializeQuorum(
         address quorumId,
         uint64 groupId,
         uint16 minSignatures,
         uint8 ownerGroupId,
         address[] calldata addresses
     ) public override virtual {
-			_initialize(quorumId, groupId, minSignatures, ownerGroupId, addresses);
+        _initializeQuorum(quorumId, groupId, minSignatures, ownerGroupId, addresses);
     }
 
     /**

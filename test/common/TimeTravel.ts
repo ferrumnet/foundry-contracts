@@ -35,7 +35,7 @@ export async function advanceBlock() {
 export async function getTime() {
 	const currentNumber = await ethers.getDefaultProvider().getBlockNumber();
 	const blk = await ethers.getDefaultProvider().getBlock(currentNumber);
-	return blk.timestamp;
+	return blk!.timestamp;
 }
 
 export async function hardhatAdvanceTimeAndBlock(totalTime: number, blocks: number) {

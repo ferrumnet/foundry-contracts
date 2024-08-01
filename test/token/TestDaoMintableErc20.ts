@@ -1,6 +1,6 @@
 import { abi, deployWithOwner, getCtx, TestContext, throws, Wei, ZeroAddress } from "../common/Utils";
-import { DaoMintableErc20 } from '../../typechain-types/DaoMintableErc20';
-import { TokenDao } from '../../typechain-types/TokenDao';
+import { DaoMintableErc20 } from '../../typechain-types';
+import { TokenDao } from '../../typechain-types';
 import { randomBytes } from "crypto";
 import { getBridgeMethodCall } from "../common/Eip712Utils";
 import { expect } from "chai";
@@ -26,11 +26,11 @@ async function context() {
     console.log('Starting');
     const data = abi.encode(['string', 'string'], ['Test Dao Mintable', 'TDM']);
     console.log('Starting ctx', data);
-    const daoToken = await deployWithOwner(ctx, 'DaoMintableErc20', ctx.owner, data) as DaoMintableErc20;
-    console.log('DAO Token mited ', daoToken.address);
-    const dao = await deployWithOwner(ctx, 'TokenDao', ctx.owner, '0x') as TokenDao;
-    console.log('Minted token DAO', dao.address);
-    await dao.setToken(daoToken.address);
+    const daoToken = await deployWithOwner(ctx, 'DaoMintableErc20', ctx.owner, data) as unknown as DaoMintableErc20;
+    console.log('DAO Token mited ', await daoToken.getAddress());
+    const dao = await deployWithOwner(ctx, 'contracts/contracts/signature/TokenDao.sol:TokenDao', ctx.owner, '0x') as unknown as TokenDao;
+    console.log('Minted token DAO', await dao.getAddress());
+    await dao.setToken(daoToken);
     return {
         ...ctx,
         dao, daoToken,
@@ -44,13 +44,13 @@ async function crucibleMethodCall(
 	const name = (await ctx.dao.NAME()).toString();
 	const version = (await ctx.dao.VERSION()).toString();
 	return getBridgeMethodCall(
-		name, version, ctx.chainId, ctx.dao.address, methodName, args, sks);
+		name, version, ctx.chainId, await ctx.dao.getAddress(), methodName, args, sks);
 }
 
 async function init(ctx: DaoTokenContext) {
     const quorum = id().substring(0, 42);
     console.log('Initializing the ownership to three signatures...', {quorum, GOV_GROUP_ID});
-    await ctx.dao.initialize(quorum, GOV_GROUP_ID, 2, 0, [
+    await ctx.dao.initializeQuorum(quorum, GOV_GROUP_ID, 2, 0, [
         ctx.wallets[3],
         ctx.wallets[4],
         ctx.wallets[5],
@@ -64,7 +64,7 @@ describe('TestTokenDaoMintable', function (){
         const ctx = await context();
         const {dao} = ctx;
         console.log('Transfer ownership to dap');
-        await ctx.daoToken.transferOwnership(ctx.dao.address);
+        await ctx.daoToken.transferOwnership(ctx.dao);
         console.log('Owner is ', await ctx.daoToken.owner());
         await init(ctx);
 
@@ -111,7 +111,7 @@ describe('TestTokenDaoMintable', function (){
     });
     _it('Can transfer ownership out using multisig', async function() {
         const ctx = await context();
-        await ctx.daoToken.transferOwnership(ctx.dao.address);
+        await ctx.daoToken.transferOwnership(ctx.dao);
         await init(ctx);
 
         const exp = expiry().toString();
@@ -135,7 +135,7 @@ describe('TestTokenDaoMintable', function (){
     });
     _it('Can transfer ownership as owner', async function() {
         const ctx = await context();
-        await ctx.daoToken.transferOwnership(ctx.dao.address);
+        await ctx.daoToken.transferOwnership(ctx.dao);
         await init(ctx);
 
         let owner = (await ctx.daoToken.owner()).toString();
@@ -149,7 +149,7 @@ describe('TestTokenDaoMintable', function (){
     });
     _it('Can add and remove signers', async function() {
         const ctx = await context();
-        await ctx.daoToken.transferOwnership(ctx.dao.address);
+        await ctx.daoToken.transferOwnership(ctx.dao);
         await init(ctx);
         const quorum = (await ctx.dao.quorumList(0)).toString().toLocaleLowerCase();
         let sub = await ctx.dao.quorumSubscriptions(ctx.acc1);
@@ -193,7 +193,7 @@ describe('TestTokenDaoMintable', function (){
     });
     it('Can add and remove signers', async function() {
         const ctx = await context();
-        await ctx.daoToken.transferOwnership(ctx.dao.address);
+        await ctx.daoToken.transferOwnership(ctx.dao);
         await init(ctx);
 
         const exp = expiry().toString();

@@ -1,13 +1,13 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 import { expect } from "chai";
 import { randomBytes } from "crypto";
 import { ethers } from "hardhat";
-import { DummyToken } from "../../typechain-types/DummyToken";
-import { IVersioned } from "../../typechain-types/IVersioned";
+import { DummyToken, IVersioned } from "../../typechain-types";
+import { Contract } from "ethers";
 export const ZeroAddress = '0x' + '0'.repeat(40);
 export const Salt = '0x' + '12'.repeat(32);
 
-export const abi = ethers.utils.defaultAbiCoder;
+export const abi = new ethers.AbiCoder();
 
 export const _WETH: {[k: number]: string} = {
 	4: '0xc778417e063141139fce010982780140aa0cd5ab',
@@ -50,17 +50,17 @@ export interface TestContext {
 
 export class Wei {
 	static from(v: string) {
-		return ethers.utils.parseEther(v).toString();
+		return ethers.parseEther(v).toString();
 	}
 	static to(v: string) {
-		return ethers.utils.formatEther(v);
+		return ethers.formatEther(v);
 	}
 	static async toP(v: Promise<any>) {
 		return Wei.to((await v).toString());
 	}
 	static async balance(tokAddr: string, addr: string) {
         const tf = await ethers.getContractFactory('DummyToken');
-        const tok = await tf.attach(tokAddr) as DummyToken;
+        const tok = await tf.attach(tokAddr) as unknown as DummyToken;
 		const b = await tok.balanceOf(addr);
 		return Wei.to(b.toString());
 	}
@@ -81,7 +81,7 @@ export async function getCtx(): Promise<TestContext> {
 		acc1: acc1.address, acc2: acc2.address,acc3: acc3.address,acc4: acc4.address, acc5: acc5.address,
 		signers: { owner, acc1, acc2, acc3, acc4, acc5 },
 		deployer,
-		chainId,
+		chainId: Number(chainId),
 		wallets: [],
 		sks: [],
 	} as TestContext;
@@ -107,12 +107,12 @@ export async function deploy(ctx: TestContext, contract: string, initData: strin
 
 export async function getGasLimit(tx: any) {
 	const reci = await ethers.provider.getTransactionReceipt(tx.hash);
-	return reci.gasUsed.toString();
+	return reci!.gasUsed.toString();
 }
 
 export async function deployWithOwner(ctx: TestContext, contract: string, owner: string, initData: string) {
 	return await deployUsingDeployer(contract, owner, initData,
-		ctx.deployer.address, Salt);
+		await ctx.deployer.getAddress(), Salt);
 }
 
 export async function getTransactionReceipt(id: string) {
@@ -130,7 +130,8 @@ export async function getTransactionReceipt(id: string) {
 
 export async function getTransactionLog(id: string, contract: any, eventName: string) {
 	const reci = await getTransactionReceipt(id);
-	const log = reci.logs.find(l => l.address.toLowerCase() === contract.address.toLocaleLowerCase());
+	const addr = await contract.getAddress();
+	const log = reci!.logs.find(l => l.address.toLowerCase() === addr.toLocaleLowerCase());
 	if (!reci || !log) {
 		throw new Error('Could not get transaction ' + id + ' or logs were messed up. ' + (reci || ''));
 	}
@@ -151,7 +152,7 @@ export async function getTransactionLog(id: string, contract: any, eventName: st
 
 export async function contractExists(contractName: string, contract: string) {
 	const depFac = await ethers.getContractFactory(contractName);
-	const deployer = await depFac.attach(contract) as IVersioned;
+	const deployer = await depFac.attach(contract) as unknown as IVersioned;
     try {
         const isThere = await deployer.VERSION();
         if ( isThere && isThere.toString().length > 0) {
@@ -162,8 +163,13 @@ export async function contractExists(contractName: string, contract: string) {
     }
 }
 
-export async function deployUsingDeployer(contract: string, owner: string, initData: string,
-		deployerAddr: string, salt: string) {
+export async function deployUsingDeployer(
+	contract: string,
+	owner: string,
+	initData: string,
+	deployerAddr: string,
+	salt: string
+) {
 	const contr = await ethers.getContractFactory(contract);
 	const depFac = await ethers.getContractFactory("FerrumDeployer");
 	const deployer = await depFac.attach(deployerAddr);
@@ -190,7 +196,7 @@ export async function deployUsingDeployer(contract: string, owner: string, initD
 		// }
 	// }
 
-	const bytecodeHash = ethers.utils.keccak256(contr.bytecode);
+	const bytecodeHash = ethers.keccak256(contr.bytecode);
 	const addr = await deployer.computeAddressOwnable(Salt, owner, initData, bytecodeHash);
 	console.log('Deployed address ', {addr, eventAddr});
 	if (eventAddr !== addr) {
@@ -201,7 +207,7 @@ export async function deployUsingDeployer(contract: string, owner: string, initD
 }
 
 export async function deployDummyToken(ctx: TestContext, name: string = 'DummyToken', owner: string = ZeroAddress) {
-	const abiCoder = ethers.utils.defaultAbiCoder;
+	const abiCoder = new ethers.AbiCoder();
 	var initData = abiCoder.encode(['address'], [ctx.owner]);
 	const tok = await deployWithOwner(ctx, name, owner, initData);
 	if (!ctx.token) {
