@@ -9,7 +9,7 @@ describe("GTD UUPS", function () {
     const lowThresholdX1000 = 500;
     let gtd,
         proxy,
-        proxiedGtd
+        proxiedGtd: GeneralTaxDistributorUpgradable;
 
     async function deploymentFixture() {
         ({ proxy, gtd } = await hre.ignition.deploy(GTDProxyModule, {
