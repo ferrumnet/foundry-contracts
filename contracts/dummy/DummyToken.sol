@@ -12,4 +12,5 @@ contract DummyToken is ERC20Burnable {
 }
 
 contract DummyTokenOwnable is DummyToken, Ownable {
+    constructor()Ownable(msg.sender){}
 }

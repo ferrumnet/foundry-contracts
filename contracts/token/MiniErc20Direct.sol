@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.6.0 <=0.8.2;
+pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract DirectMinimalErc20 is ERC20Burnable, Ownable {
 	string public _name;
 	string public _symbol;
-	constructor() ERC20("", "") {
+	constructor() ERC20("", "")Ownable(msg.sender) {
 	}
 
 	function init(address to, string memory name_, string memory symbol_, uint256 supply)

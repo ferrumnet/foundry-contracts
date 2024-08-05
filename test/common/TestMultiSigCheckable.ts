@@ -55,7 +55,7 @@ describe('Covering multisig checkable issues', function() {
 				{ type: 'uint64', name: 'expiry', value: expiry },
 			]
 			, [ctx.sks[1]]);
-        await ctx.multi.addToQuorum(ctx.wallets[3], q1, salt, expiry, multiSig.signature);
+        await ctx.multi.addToQuorum(ctx.wallets[3], q1, salt, expiry, multiSig.signature!);
         console.log('User from q1 could add users to q1');
 
         salt = randomSalt();
@@ -68,7 +68,7 @@ describe('Covering multisig checkable issues', function() {
 				{ type: 'uint64', name: 'expiry', value: expiry },
 			]
 			, [ctx.sks[1]]);
-        await throws(ctx.multi.addToQuorum(ctx.wallets[4], q2, salt, expiry, multiSig.signature),
+        await throws(ctx.multi.addToQuorum(ctx.wallets[4], q2, salt, expiry, multiSig.signature!),
             'MSC: invalid groupId for signer');
     });
 
@@ -104,7 +104,7 @@ describe('Covering multisig checkable issues', function() {
 				{ type: 'uint64', name: 'expiry', value: expiry },
 			]
 			, [ctx.sks[2]]);
-        await throws(ctx.multi.addToQuorum(ctx.wallets[4], q1, salt, expiry, multiSig.signature),
+        await throws(ctx.multi.addToQuorum(ctx.wallets[4], q1, salt, expiry, multiSig.signature!),
             'MSC: invalid groupId for signer');
 
         console.log('The owner adds to the quorum')
@@ -117,7 +117,7 @@ describe('Covering multisig checkable issues', function() {
 				{ type: 'uint64', name: 'expiry', value: expiry },
 			]
 			, [ctx.sks[1]]);
-        await ctx.multi.addToQuorum(ctx.wallets[4], q1, salt, expiry, multiSig.signature);
+        await ctx.multi.addToQuorum(ctx.wallets[4], q1, salt, expiry, multiSig.signature!);
         console.log('User from q1 could add users to q1');
 
     });

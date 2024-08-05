@@ -43,7 +43,7 @@ contract GeneralTaxDistributor is IGeneralTaxDistributor, WithAdmin {
     TargetInfo[] public targetInfos;
     RandomHelper.RandomState roller;
 
-    constructor() {
+    constructor() Ownable(msg.sender) {
         bytes memory data = IFerrumDeployer(msg.sender).initData();
         (lowThresholdX1000) = abi.decode(data, (uint256));
     }

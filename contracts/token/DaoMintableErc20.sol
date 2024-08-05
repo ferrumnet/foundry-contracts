@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.2;
+pragma solidity ^0.8.24;
 import "../common/IFerrumDeployer.sol";
 import "../signature/IDaoCallable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 contract DaoMintableErc20 is Ownable, ERC20Burnable, IDaoCallable {
 	string public _name;
 	string public _symbol;
-	constructor() ERC20("", "") {
+	constructor() ERC20("", "") Ownable(msg.sender) {
 		(_name, _symbol) = abi.decode(IFerrumDeployer(msg.sender).initData(), (string, string));
 	}
 

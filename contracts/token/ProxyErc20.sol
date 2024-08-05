@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.6.0 <=0.8.2;
+pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "hardhat/console.sol";
 
 interface IGenericUpgradableToken {
@@ -18,7 +17,6 @@ interface IGenericUpgradableTokenMintable {
 
 contract GenericUpgradableToken is ERC20BurnableUpgradeable,
 	OwnableUpgradeable, IGenericUpgradableToken {
-    using SafeMath for uint256;
 
 		function init(string memory _name, string memory _symbol,
 			uint256 _totalSupply, address owner, address admin)
@@ -26,18 +24,17 @@ contract GenericUpgradableToken is ERC20BurnableUpgradeable,
 			__Context_init_unchained();
 			__ERC20_init_unchained(_name, _symbol);
 			__ERC20Burnable_init_unchained();
-			__Ownable_init_unchained();
+			__Ownable_init_unchained(msg.sender);
 			_mint(owner, _totalSupply);
 			transferOwnership(admin);
 		}
 }
 
 contract GenericUpgradableTokenMintable is GenericUpgradableToken, IGenericUpgradableTokenMintable {
-    using SafeMath for uint256;
 
     function updateTotalSupply(address to, uint256 newTotalSupply)
 		public override virtual onlyOwner {
-			uint256 amount = newTotalSupply.sub(totalSupply());
+			uint256 amount = newTotalSupply-(totalSupply());
 			_mint(to, amount);
     }
 }

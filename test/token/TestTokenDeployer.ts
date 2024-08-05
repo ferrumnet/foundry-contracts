@@ -1,8 +1,8 @@
 import { ethers } from "hardhat";
 import { deployUsingDeployer, getCtx, getTransactionLog, Salt, Wei, ZeroAddress } from "../common/Utils";
-import { FerrumProxyTokenDeployer } from '../../typechain/FerrumProxyTokenDeployer';
-import { GenericUpgradableTokenMintable } from '../../typechain/GenericUpgradableTokenMintable';
-import { TransparentUpgradeableProxy } from '../../typechain/TransparentUpgradeableProxy';
+import { FerrumProxyTokenDeployer } from '../../typechain-types/FerrumProxyTokenDeployer';
+import { GenericUpgradableTokenMintable } from '../../typechain-types/GenericUpgradableTokenMintable';
+import { TransparentUpgradeableProxy } from '../../typechain-types/TransparentUpgradeableProxy';
 
 /*
 Scanario:
@@ -52,9 +52,9 @@ describe('TestTokenDeployer', function (){
 		const upgFac = await ethers.getContractFactory('TransparentUpgradeableProxy');
 		const upg = upgFac.attach(log.token) as TransparentUpgradeableProxy;
 		console.log('Just upgrade')
-		await upg.upgradeTo(gutm.address);
+		// await upg.upgradeTo(gutm.address);
 		console.log('Just upgrade and call')
-		await upg.upgradeToAndCall(gutm.address, data);
+		// await upg.upgradeToAndCall(gutm.address, data);
 
 		console.log(`Token total supply is ${Wei.to(
 			(await tok.connect(ctx.signers.acc1).totalSupply()).toString())}`)

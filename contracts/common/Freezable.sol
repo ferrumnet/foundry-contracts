@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.2;
+pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * To freeze functionality. This is one way. Once you freeze there is no way back.
  */
-contract Freezable is Ownable {
+abstract contract Freezable is Ownable {
     bool isFrozen;
 
     /**

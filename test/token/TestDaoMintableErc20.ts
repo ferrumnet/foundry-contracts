@@ -128,7 +128,7 @@ describe('TestTokenDaoMintable', function (){
             [ctx.sks[3], ctx.sks[4]]);
         console.log('Change the token ownership to someone else');
         await ctx.dao.upgradeDao(
-            ctx.owner, salt, exp, call.signature);
+            ctx.owner, salt, exp, call.signature!);
         owner = (await ctx.daoToken.owner()).toString();
         console.log('New owner is currently ', owner)
         expect(owner.toLocaleLowerCase()).is.eq(ctx.owner.toLocaleLowerCase());
@@ -165,7 +165,7 @@ describe('TestTokenDaoMintable', function (){
                 { type: 'uint64',  name: 'expiry', value: exp },
             ],
             [ctx.sks[3], ctx.sks[4]]);
-        await ctx.dao.addToQuorum(ctx.acc1, quorum, salt, exp, call.signature);
+        await ctx.dao.addToQuorum(ctx.acc1, quorum, salt, exp, call.signature!);
         
         console.log('Make sure we are subscribed properly');
         sub = await ctx.dao.quorumSubscriptions(ctx.acc1);
@@ -186,7 +186,7 @@ describe('TestTokenDaoMintable', function (){
                 { type: 'uint64',  name: 'expiry', value: exp },
             ],
             [ctx.sks[3], ctx.sks[4]]);
-        await ctx.dao.updateMinSignature(quorum, '4', salt, exp, call.signature);
+        await ctx.dao.updateMinSignature(quorum, '4', salt, exp, call.signature!);
         const upq = await ctx.dao.quorums(quorum);
         console.log('Updated quorum is ', upq);
         expect(upq.minSignatures).to.be.eq(4);
@@ -206,7 +206,7 @@ describe('TestTokenDaoMintable', function (){
                 { type: 'uint64',  name: 'expiry', value: exp },
             ],
             [ctx.sks[3], ctx.sks[4]]);
-        await throws(ctx.dao.removeFromQuorum(ctx.acc1, salt, exp, call.signature), 'MSC: subscription not found');
+        await throws(ctx.dao.removeFromQuorum(ctx.acc1, salt, exp, call.signature!), 'MSC: subscription not found');
 
         salt = id();
         call = await crucibleMethodCall(ctx,
@@ -216,7 +216,7 @@ describe('TestTokenDaoMintable', function (){
                 { type: 'uint64',  name: 'expiry', value: exp },
             ],
             [ctx.sks[3], ctx.sks[4]]);
-        await ctx.dao.removeFromQuorum(ctx.wallets[3], salt, exp, call.signature);
+        await ctx.dao.removeFromQuorum(ctx.wallets[3], salt, exp, call.signature!);
         console.log('Address removed');
         let sub = await ctx.dao.quorumSubscriptions(ctx.acc3);
         expect(sub.id).to.be.eq(ZeroAddress);
@@ -230,6 +230,6 @@ describe('TestTokenDaoMintable', function (){
                 { type: 'uint64',  name: 'expiry', value: exp },
             ],
             [ctx.sks[4], ctx.sks[5]]);
-        await throws(ctx.dao.removeFromQuorum(ctx.wallets[4], salt, exp, call.signature), 'MSC: quorum becomes ususable');
+        await throws(ctx.dao.removeFromQuorum(ctx.wallets[4], salt, exp, call.signature!), 'MSC: quorum becomes ususable');
     });
 });
