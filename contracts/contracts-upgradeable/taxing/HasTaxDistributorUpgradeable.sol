@@ -7,7 +7,7 @@ import "../../contracts/taxing/IHasTaxDistributor.sol";
 /**
  @notice A contract that uses tax distributer
  */
-abstract contract HasTaxDistributor is OwnableUpgradeable, IHasTaxDistributor {
+abstract contract HasTaxDistributorUpgradeable is OwnableUpgradeable, IHasTaxDistributor {
     /// common:storage-location erc7201:ferrum.storage.hastaxdistributor.001
     struct HasTaxDistributorStorageV001 {
         address taxDistributor;

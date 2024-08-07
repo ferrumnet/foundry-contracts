@@ -6,7 +6,7 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 
-abstract contract Sweepable is OwnableUpgradeable {
+abstract contract SweepableUpgradeable is OwnableUpgradeable {
     using SafeERC20 for IERC20;
 
     /// @custom:storage-location erc7201:ferrum.storage.sweepable.001

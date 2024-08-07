@@ -7,14 +7,14 @@ import {UUPSUpgradeable, Initializable} from "@openzeppelin/contracts-upgradeabl
 import {IGeneralTaxDistributor} from "../../contracts/taxing/IGeneralTaxDistributor.sol";
 import {RandomHelper} from "../../contracts/math/RandomHelper.sol";
 import {IBurnable} from "../../contracts/common/IBurnable.sol";
-import {WithAdmin} from "../common/WithAdmin.sol";
+import {WithAdminUpgradeable} from "../common/WithAdminUpgradeable.sol";
 import {IRewardPool} from "../../contracts/staking/interfaces/IRewardPool.sol";
 
 
 /**
  * General tax distributor.
  */
-contract GeneralTaxDistributorUpgradable is Initializable, UUPSUpgradeable, WithAdmin, IGeneralTaxDistributor {
+contract GeneralTaxDistributorUpgradable is Initializable, UUPSUpgradeable, WithAdminUpgradeable, IGeneralTaxDistributor {
     using SafeERC20 for IERC20;
     enum TargetType {
         NotSet,

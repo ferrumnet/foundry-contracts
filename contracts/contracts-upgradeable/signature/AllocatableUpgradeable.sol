@@ -2,11 +2,11 @@
 pragma solidity ^0.8.24;
 
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {SigCheckable} from "./SigCheckable.sol";
-import {WithAdmin} from "../common/WithAdmin.sol";
+import {SigCheckableUpgradeable} from "./SigCheckableUpgradeable.sol";
+import {WithAdminUpgradeable} from "../common/WithAdminUpgradeable.sol";
 
 
-abstract contract Allocatable is SigCheckable, WithAdmin {
+abstract contract AllocatableUpgradeable is SigCheckableUpgradeable, WithAdminUpgradeable {
     /// @custom:storage-location erc7201:ferrum.storage.allocatable.001
     struct AllocatableStorageV001 {
         mapping(address => bool) signers;

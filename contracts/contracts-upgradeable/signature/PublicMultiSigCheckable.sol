@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {MultiSigCheckable} from "./MultiSigCheckable.sol";
+import {MultiSigCheckableUpgradeable} from "./MultiSigCheckableUpgradeable.sol";
 
 
 /**
  * @dev This removes adminOnly and other relevant methods from a multiSigCheckable.
  */
-abstract contract PublicMultiSigCheckable is MultiSigCheckable {
+abstract contract PublicMultiSigCheckable is MultiSigCheckableUpgradeable {
     /**
     @notice Initialize a quorum
         Override this to allow public creatig new quorums.

@@ -7,7 +7,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 /**
  * To freeze functionality. This is one way. Once you freeze there is no way back.
  */
-abstract contract Freezable is OwnableUpgradeable {
+abstract contract FreezableUpgradeable is OwnableUpgradeable {
     /// @custom:storage-location erc7201:ferrum.storage.freezable.001
     struct FreezeableStorageV001 {
         bool isFrozen;

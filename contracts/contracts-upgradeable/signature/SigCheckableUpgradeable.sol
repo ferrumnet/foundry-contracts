@@ -8,7 +8,7 @@ import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/crypt
 /**
  @dev Make sure to define method signatures
  */
-abstract contract SigCheckable is EIP712Upgradeable {
+abstract contract SigCheckableUpgradeable is EIP712Upgradeable {
     /// @custom:storage-location erc7201:ferrum.storage.sigcheckable.001
     struct SigCheckableStorageV001 {
         mapping(bytes32=>bool) usedHashes;

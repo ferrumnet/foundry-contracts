@@ -105,6 +105,11 @@ export function multiSigToBytes(sigs: string[]): string {
 	return '0x' + sig;
 }
 
+interface Signature {
+    sig: string;
+    addr: string;
+}
+
 export async function getBridgeMethodCall(
 		contractName: string,
 		contractVersion: string,
@@ -123,7 +128,7 @@ export async function getBridgeMethodCall(
 		} as Eip712Params,
 	);
 	// console.log('About to producing msg ', msg)
-	const sigs = [];
+	const sigs: Signature[] = [];
 	for (const sk of sks) {
 		console.log(`    About to sign with private key ${sk}`);
 		const {sig, addr} = await signWithPrivateKey(sk, msg.hash!);

@@ -3,10 +3,8 @@ import { expect } from "chai";
 import { randomBytes } from "crypto";
 import { ethers } from "hardhat";
 import { DummyToken, IVersioned } from "../../typechain-types";
-import { Contract } from "ethers";
 export const ZeroAddress = '0x' + '0'.repeat(40);
 export const Salt = '0x' + '12'.repeat(32);
-
 export const abi = new ethers.AbiCoder();
 
 export const _WETH: {[k: number]: string} = {

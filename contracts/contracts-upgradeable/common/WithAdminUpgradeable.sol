@@ -5,7 +5,7 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 
-abstract contract WithAdmin is Initializable, OwnableUpgradeable {
+abstract contract WithAdminUpgradeable is Initializable, OwnableUpgradeable {
 	/// @custom:storage-location erc7201:ferrum.storage.withadmin.001
     struct WithAdminStorageV001 {
         address admin;

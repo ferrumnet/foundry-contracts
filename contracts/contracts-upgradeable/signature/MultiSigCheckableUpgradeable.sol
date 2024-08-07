@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 
 import {EIP712Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import {WithAdmin} from "../common/WithAdmin.sol";
+import {WithAdminUpgradeable} from "../common/WithAdminUpgradeable.sol";
 import {MultiSigLib} from "../../contracts/signature/MultiSigLib.sol";
 
 
@@ -17,7 +17,7 @@ import {MultiSigLib} from "../../contracts/signature/MultiSigLib.sol";
 	  - Once master governance is setup, governance can add / remove any quorums
 	  - All actions can only be submitted to chain by admin or owner
  */
-abstract contract MultiSigCheckable is WithAdmin, EIP712Upgradeable {
+abstract contract MultiSigCheckableUpgradeable is WithAdminUpgradeable, EIP712Upgradeable {
     struct Quorum {
         address id;
         uint64 groupId; // GroupId: 0 => General, 1 => Governance, >1 => Custom

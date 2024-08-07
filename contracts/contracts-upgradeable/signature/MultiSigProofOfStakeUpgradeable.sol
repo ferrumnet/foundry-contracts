@@ -2,11 +2,11 @@
 pragma solidity ^0.8.24;
 
 import {IStakeInfo} from "../../contracts/staking/interfaces/IStakeInfo.sol";
-import {Freezable} from "../common/Freezable.sol";
-import {MultiSigCheckable} from "./MultiSigCheckable.sol";
+import {FreezableUpgradeable} from "../common/FreezableUpgradeable.sol";
+import {MultiSigCheckableUpgradeable} from "./MultiSigCheckableUpgradeable.sol";
 
 
-abstract contract MultiSigProofOfStake is Freezable, MultiSigCheckable {
+abstract contract MultiSigProofOfStakeUpgradeable is FreezableUpgradeable, MultiSigCheckableUpgradeable {
     /// custom:storage-location erc7201:ferrum.storage.multisigproofofstake.001
     struct MultiSigProofOfStakeStorageV001 {
         address staking;

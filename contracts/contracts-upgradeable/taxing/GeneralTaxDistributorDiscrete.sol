@@ -8,7 +8,7 @@ import {GeneralTaxDistributorUpgradable} from "./GeneralTaxDistributorUpgradeabl
 /**
  * General tax distributor.
  */
-contract GeneralTaxDistributorDiscrete is GeneralTaxDistributorUpgradable {
+contract GeneralTaxDistributorDiscreteUpgradeable is GeneralTaxDistributorUpgradable {
 
     function distributeTaxDirect(address token
     ) external override returns (uint256) {
