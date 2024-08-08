@@ -224,14 +224,14 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
     @param ownerGroupId The owner group ID. Can modify this quorum (if managed)
     @param addresses List of addresses in the quorum
     */
-    function initialize(
+    function initializeQuorum(
         address quorumId,
         uint64 groupId,
         uint16 minSignatures,
         uint8 ownerGroupId,
         address[] calldata addresses
     ) public virtual onlyAdmin {
-        _initialize(quorumId, groupId, minSignatures, ownerGroupId, addresses);
+        _initializeQuorum(quorumId, groupId, minSignatures, ownerGroupId, addresses);
     }
 
     /**
@@ -242,7 +242,7 @@ abstract contract MultiSigCheckable is WithAdmin, EIP712 {
      @param ownerGroupId The owner group ID
      @param addresses The initial addresses in the quorum
      */
-    function _initialize(
+    function _initializeQuorum(
         address quorumId,
         uint64 groupId,
         uint16 minSignatures,

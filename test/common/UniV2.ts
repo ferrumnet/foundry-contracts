@@ -2,11 +2,12 @@ import { ChainId, Token, TokenAmount, Trade, TradeType, Route, Percent, Router, 
 import { abi as IUniswapV2Router02ABI } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json'
 import { abi as IUniswapV2Pair} from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { ethers } from 'hardhat';
-import { DummyToken } from '../../typechain-types/DummyToken';
+import { DummyToken } from '../../typechain-types';
 import { getTransactionReceipt, Wei } from './Utils';
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
+import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 import { Contract } from 'ethers';
 import { expect } from 'chai';
+
 
 export const DEFAULT_TTL = 360;
 export const ROUTER_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
@@ -73,7 +74,7 @@ export class UniV2Helper {
 
     async allow(tok1: string, from: SignerWithAddress, approvee: string, amount: string) {
         const tokF = await ethers.getContractFactory('DummyToken');
-        const tok = await tokF.attach(tok1) as DummyToken;
+        const tok = await tokF.attach(tok1) as unknown as DummyToken;
         // await tok.approve(approvee, Wei.from(amount));
         await tok.connect(from).approve(approvee, Wei.from(amount));
         const allowance = await tok.allowance(from.address, approvee);
@@ -90,7 +91,7 @@ export class UniV2Helper {
         let curP = this.cache[k];
         if (!curP) {
             const contract = new ethers.Contract(pairAddr, IUniswapV2Pair);
-            const res = await contract.methods.getReserves().call();
+            const res = await contract.getReserves();
             const reserves0 = res.reserve0;
             const reserves1 = res.reserve1;
             const token1 = this.tok(tok1);

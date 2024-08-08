@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "./MultiSigCheckable.sol";
+import {MultiSigCheckableUpgradeable} from "./MultiSigCheckableUpgradeable.sol";
+
 
 /**
  * @dev This removes adminOnly and other relevant methods from a multiSigCheckable.
  */
-abstract contract PublicMultiSigCheckable is MultiSigCheckable {
+abstract contract PublicMultiSigCheckable is MultiSigCheckableUpgradeable {
     /**
     @notice Initialize a quorum
         Override this to allow public creatig new quorums.
@@ -19,22 +20,21 @@ abstract contract PublicMultiSigCheckable is MultiSigCheckable {
     @param ownerGroupId The owner group ID. Can modify this quorum (if managed)
     @param addresses List of addresses in the quorum
     */
-    function initialize(
+    function initializeQuorum(
         address quorumId,
         uint64 groupId,
         uint16 minSignatures,
         uint8 ownerGroupId,
         address[] calldata addresses
     ) public override virtual {
-			_initialize(quorumId, groupId, minSignatures, ownerGroupId, addresses);
+        _initializeQuorum(quorumId, groupId, minSignatures, ownerGroupId, addresses);
     }
 
     /**
     @notice Disable force removal
      */
-    function forceRemoveFromQuorum(address
-    ) external override virtual {
-			revert("PMSC: Not supported");
+    function forceRemoveFromQuorum(address) external override virtual {
+        revert("PMSC: Not supported");
     }
 
     /**
@@ -45,6 +45,6 @@ abstract contract PublicMultiSigCheckable is MultiSigCheckable {
         uint64,
         bytes memory
     ) external override virtual {
-			revert("PMSC: Not supported");
+        revert("PMSC: Not supported");
     }
 }

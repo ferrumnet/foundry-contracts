@@ -1,7 +1,7 @@
 import Web3 from 'web3';
-import { Eth } from 'web3-eth';
-// @ts-ignore
+import {ethers} from 'hardhat'
 import {ecsign, toRpcSig, fromRpcSig, ecrecover, pubToAddress} from 'ethereumjs-util';
+
 type HexString  = string;
 
 export interface Eip712Params {
@@ -13,18 +13,19 @@ export interface Eip712Params {
     signature?: HexString;
 }
 
-export function domainSeparator(eth: Eth,
-        contractName: string,
-        contractVersion: string,
-        netId: number,
-        contractAddress: HexString) {
+export function domainSeparator(
+	contractName: string,
+	contractVersion: string,
+	netId: number,
+	contractAddress: HexString
+) {
     const hashedName = Web3.utils.keccak256(Web3.utils.utf8ToHex(contractName));
     const hashedVersion = Web3.utils.keccak256(Web3.utils.utf8ToHex(contractVersion));
     const typeHash = Web3.utils.keccak256(
         Web3.utils.utf8ToHex("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"));
-
+	const abiCoder = new ethers.AbiCoder();
     return Web3.utils.keccak256(
-        eth.abi.encodeParameters(
+        abiCoder.encode(
             ['bytes32', 'bytes32', 'bytes32', 'uint256', 'address'],
             [typeHash, hashedName, hashedVersion, netId, contractAddress]
         )
@@ -43,7 +44,6 @@ export function fixSig(sig: HexString) {
 }
 
 export function produceSignature(
-        eth: Eth,
         netId: number,
         contractAddress: HexString,
         eipParams: Eip712Params): Eip712Params {
@@ -55,9 +55,10 @@ export function produceSignature(
     // ['bytes32', 'address', 'address', 'uint256', 'bytes32'];
     const params = ['bytes32'].concat(eipParams.args.map(p => p.type));
 	// console.log('methodSig: ', methodSig, params);
-    const structure = eth.abi.encodeParameters(params, [methodHash, ...eipParams.args.map(p => p.value)]);
+	const abiCoder = new ethers.AbiCoder();
+    const structure = abiCoder.encode(params, [methodHash, ...eipParams.args.map(p => p.value)]);
     const structureHash = Web3.utils.keccak256(structure);
-    const ds = domainSeparator(eth, eipParams.contractName, eipParams.contractVersion, netId, contractAddress);
+    const ds = domainSeparator(eipParams.contractName, eipParams.contractVersion, netId, contractAddress);
 	// console.log('Method hash is ', methodHash, methodSig);
 	// console.log('Structure hash is ', structureHash, {params});
     // console.log('values area', [methodHash, ...eipParams.args.map(p => p.value)]);
@@ -94,7 +95,7 @@ export function multiSigToBytes(sigs: string[]): string {
 	let sig: string = '';
 	let vs: string = '';
 	for (let i = 0; i<sigs.length; i++) {
-		const rsv = fromRpcSig(Buffer.from(sigs[i].replace('0x',''), 'hex'));
+		const rsv = fromRpcSig(sigs[i]);
 		sig = sig + `${rsv.r.toString('hex')}${rsv.s.toString('hex')}`;
 		vs = vs + rsv.v.toString(16);
 	}
@@ -102,6 +103,11 @@ export function multiSigToBytes(sigs: string[]): string {
 	vs = vs + '0'.repeat(padding);
 	sig = sig + vs;
 	return '0x' + sig;
+}
+
+interface Signature {
+    sig: string;
+    addr: string;
 }
 
 export async function getBridgeMethodCall(
@@ -114,7 +120,7 @@ export async function getBridgeMethodCall(
 	const web3 = new Web3();
 	// console.log('We are going to bridge method call it ', args)
 	const msg = produceSignature(
-		web3.eth, chainId, bridge, {
+		chainId, bridge, {
 			contractName: contractName,
 			contractVersion: contractVersion,
 			method: methodName,
@@ -122,7 +128,7 @@ export async function getBridgeMethodCall(
 		} as Eip712Params,
 	);
 	// console.log('About to producing msg ', msg)
-	const sigs = [];
+	const sigs: Signature[] = [];
 	for (const sk of sks) {
 		console.log(`    About to sign with private key ${sk}`);
 		const {sig, addr} = await signWithPrivateKey(sk, msg.hash!);

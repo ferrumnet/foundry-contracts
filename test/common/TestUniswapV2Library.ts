@@ -1,6 +1,7 @@
 import { ethers } from "hardhat";
 import { ERC20, UniswapV2 } from "./UniswapV2";
 import { getCtx, Wei } from "./Utils";
+import hre from 'hardhat';
 
 const USDT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
 
@@ -11,6 +12,12 @@ const USDT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
  */
 describe("Get Prices", function () {
     it('the Test', async function () {
+        const res = await hre.network.provider.send("hardhat_metadata", []);
+        if (!res.forkedNetwork || res.forkedNetwork.chainId != 1) {
+            console.log('Not forking mainnet');
+            return;
+        }
+
         const ctx = await getCtx();
         const uniV2 = new UniswapV2(UniswapV2.ETH_ROUTER);
         await uniV2.init();
