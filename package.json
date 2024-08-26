@@ -8,6 +8,7 @@
     "postinstall": "npx hardhat compile && npx tsc && cp -r ./typechain-types ./dist/"
   },
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.637.0",
     "@openzeppelin/contracts": "^5.0.0",
     "@openzeppelin/contracts-upgradeable": "^5.0.0",
     "@uniswap/sdk": "^3.0.3",
