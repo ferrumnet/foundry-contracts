@@ -3,10 +3,10 @@ pragma solidity ^0.8.24;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {WithAdminUpgradeable} from "./WithAdminUpgradeable.sol";
 
 
-abstract contract SweepableUpgradeable is OwnableUpgradeable {
+abstract contract SweepableUpgradeable is WithAdminUpgradeable {
     using SafeERC20 for IERC20;
 
     /// @custom:storage-location erc7201:ferrum.storage.sweepable.001
@@ -23,12 +23,12 @@ abstract contract SweepableUpgradeable is OwnableUpgradeable {
         }
     }
 
-    function freezeSweep() external onlyOwner {
+    function freezeSweep() external onlyAdmin {
         SweepableStorageV001 storage $ = _getSweepableStorageV001();
         $.sweepFrozen = true;
     }
 
-    function sweepToken(address token, address to, uint256 amount) external onlyOwner {
+    function sweepToken(address token, address to, uint256 amount) external onlyAdmin {
         SweepableStorageV001 storage $ = _getSweepableStorageV001();
         require(!$.sweepFrozen, "S: Sweep is frozen");
         IERC20(token).safeTransfer(to, amount);
