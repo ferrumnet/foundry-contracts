@@ -1,8 +1,9 @@
 import { ethers } from 'hardhat';
-import { IUniswapV2Router02 } from '../../typechain-types/IUniswapV2Router02';
-import { IUniswapV2Factory } from '../../typechain-types/IUniswapV2Factory';
-import { ERC20 as IERC20 } from '../../typechain-types/ERC20';
-import { BigNumber } from 'ethers';
+import { 
+    IUniswapV2Router02,
+    IUniswapV2Factory,
+    ERC20 as IERC20
+} from '../../typechain-types'
 import { expiryInFuture, Wei } from './Utils';
 
 export class ERC20 {
@@ -11,17 +12,18 @@ export class ERC20 {
 
     async amountToMachine(humanAmount: string) {
         const deci = await (await this.token()).decimals();
-        return BigNumber.from(humanAmount).mul(BigNumber.from(10).pow(deci)).toString();
+
+        return (BigInt(humanAmount) * BigInt(10) ** BigInt(deci)).toString();
     }
 
     async amountToHuman(machineAmount: string) {
         const deci = await (await this.token()).decimals();
-        return BigNumber.from(machineAmount).div(BigNumber.from(10).pow(deci)).toString();
+        return (BigInt(machineAmount) / BigInt(10) ** BigInt(deci)).toString();
     }
 
     async token() {
         if (!this._token) {
-            this._token = await ethers.getContractAt('@openzeppelin/contracts/token/ERC20/ERC20.sol:ERC20', this.address) as IERC20;
+            this._token = await ethers.getContractAt('@openzeppelin/contracts/token/ERC20/ERC20.sol:ERC20', this.address) as unknown as  IERC20;
         }
         return this._token!;
     }
@@ -58,9 +60,9 @@ export class UniswapV2 {
     }
 
     async init() {
-        this.router = await ethers.getContractAt('IUniswapV2Router02', this.routerAddress) as IUniswapV2Router02;
+        this.router = await ethers.getContractAt('IUniswapV2Router02', this.routerAddress) as unknown as IUniswapV2Router02;
         const factoryAddress = await this.router.factory();
-        this.factory = await ethers.getContractAt('IUniswapV2Factory', factoryAddress) as IUniswapV2Factory;
+        this.factory = await ethers.getContractAt('IUniswapV2Factory', factoryAddress) as unknown as IUniswapV2Factory;
     }
 
     async addLiquidity(tok1: string, tok2: string, amount1: string, amount2: string, to: string) {

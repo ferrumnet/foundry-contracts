@@ -253,6 +253,7 @@ contract GeneralTaxDistributor is IGeneralTaxDistributor, WithAdmin {
         address origin,
         uint256 balance
     ) internal returns (uint256) {
+        require(targetInfos.length > idx, "GTD: invalid idx");
         TargetInfo memory tgt = fromToken != 0
             ? tokenTargetInfos[token][idx]
             : targetInfos[idx];
